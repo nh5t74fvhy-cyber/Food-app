@@ -1,0 +1,4 @@
+import {database} from '../server/shared.mjs';
+import {SOURCES,inspectSource} from '../server/sources.mjs';
+const [id,reviewedHash]=process.argv.slice(2);const source=SOURCES.find(s=>s.id===id);if(!source||!reviewedHash?.match(/^[a-f0-9]{64}$/))throw new Error('Usage: node --env-file=.env scripts/approve-source.mjs SOURCE_ID REVIEWED_SHA256. First review the source text and correct every matching deal.');
+const current=await inspectSource(source);if(current.hash!==reviewedHash)throw new Error('Source changed since review; inspect it again.');const db=database();const{error}=await db.from('source_checks').upsert({id,url:source.url,approved_hash:reviewedHash,approved_at:new Date().toISOString(),last_hash:reviewedHash,last_status:'unchanged',last_checked_at:new Date().toISOString()});if(error)throw error;console.log('Approved baseline saved. Publish reviewed deals separately; this command does not approve deal content.');

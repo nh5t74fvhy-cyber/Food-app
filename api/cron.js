@@ -1,0 +1,18 @@
+import webpush from 'web-push';
+import {cronAuth,database,errorResponse,json,method,preferencesSchema} from '../server/shared.mjs';
+import {dueMeals,eligibleDeals,safePushEndpoint} from '../server/logic.mjs';
+import {findNearby} from '../server/places.mjs';
+export default async function handler(req,res){try{method(req,'GET','POST');cronAuth(req);if(!process.env.VAPID_PUBLIC_KEY||!process.env.VAPID_PRIVATE_KEY||!process.env.VAPID_SUBJECT)throw Object.assign(new Error('Push delivery is not configured.'),{status:503});webpush.setVapidDetails(process.env.VAPID_SUBJECT,process.env.VAPID_PUBLIC_KEY,process.env.VAPID_PRIVATE_KEY);const db=database();const now=new Date();const start=Date.now();let delivered=0,failed=0,skipped=0,offset=0;const{data:deals,error:dealError}=await db.from('deals').select('*').eq('status','verified');if(dealError)throw dealError;
+ // Process a bounded batch in each invocation. Due windows are five minutes wide.
+ while(Date.now()-start<42000){const{data:profiles,error}=await db.from('preferences').select('user_id,settings').eq('settings->>enabled','true').order('user_id').range(offset,offset+99);if(error)throw error;if(!profiles.length)break;offset+=profiles.length;
+ for(const row of profiles){if(Date.now()-start>42000)break;const parsed=preferencesSchema.safeParse(row.settings);if(!parsed.success){skipped++;continue}const prefs=parsed.data;const due=dueMeals(prefs,now);if(!due.length)continue;
+ const [{data:subscriptions,error:subError},{data:recent,error:recentError}]=await Promise.all([db.from('push_subscriptions').select('endpoint,subscription').eq('user_id',row.user_id),db.from('deliveries').select('deal_id').eq('user_id',row.user_id).gte('created_at',new Date(now.getTime()-7*86400000).toISOString())]);if(subError||recentError)throw subError||recentError;if(!subscriptions.length)continue;
+ let nearbyBrands=[];if(prefs.nearbyOnly){if(prefs.latitude===null||prefs.longitude===null){skipped++;continue}try{const nearby=await findNearby(prefs);nearbyBrands=[...new Set(nearby.map(x=>x.brand))]}catch{skipped++;continue}}
+ for(const slot of due){const offer=eligibleDeals(deals,prefs,slot.meal,recent.map(r=>r.deal_id),nearbyBrands,now)[0];if(!offer){skipped++;continue}
+ // Unique (user, meal, local day) is an atomic claim. Reserve BEFORE sending.
+ // An uncertain push response is never retried automatically: avoid duplicates.
+ const{data:claim,error:claimError}=await db.from('deliveries').insert({user_id:row.user_id,meal:slot.meal,local_day:slot.day,deal_id:offer.id,status:'attempted'}).select('id').single();if(claimError?.code==='23505'){skipped++;continue}if(claimError)throw claimError;
+ let sent=0;for(const sub of subscriptions){if(!safePushEndpoint(sub.endpoint))continue;try{await webpush.sendNotification(sub.subscription,JSON.stringify({title:`${slot.meal[0].toUpperCase()+slot.meal.slice(1)} is on your radar`,body:`${offer.brand}: ${offer.price_label}. ${offer.title} Check local availability.`,url:`/?deal=${encodeURIComponent(offer.id)}`,tag:`${slot.day}-${slot.meal}`}),{TTL:300,urgency:'normal',timeout:5000});sent++;}catch(error){if(error.statusCode===404||error.statusCode===410){const{error:deleteError}=await db.from('push_subscriptions').delete().eq('endpoint',sub.endpoint).eq('user_id',row.user_id);if(deleteError)console.error('subscription_cleanup_failed')}failed++}}
+ const{error:updateError}=await db.from('deliveries').update({status:sent?'sent':'failed',sent_at:sent?new Date().toISOString():null}).eq('id',claim.id);if(updateError)throw updateError;recent.push({deal_id:offer.id});delivered+=sent;
+ }}if(profiles.length<100)break;}
+ return json(res,200,{delivered,failed,skipped,profiles_scanned:offset});}catch(e){return errorResponse(res,e)}}

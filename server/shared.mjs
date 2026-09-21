@@ -1,0 +1,17 @@
+import {createClient} from '@supabase/supabase-js';
+import {timingSafeEqual} from 'node:crypto';
+import {z} from 'zod';
+import {BRANDS,MEALS,safePushEndpoint} from './logic.mjs';
+let db;
+export function database(){if(!process.env.SUPABASE_URL||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw Object.assign(new Error('The app backend has not been connected yet.'),{status:503});return db??=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});}
+export function json(res,status,data){res.setHeader('Cache-Control','no-store');return res.status(status).json(data);}
+export function errorResponse(res,error){console.error('request_failed',{name:error.name,status:error.status||500});return json(res,error.status||500,{error:error instanceof z.ZodError?'Check the submitted values.':error.status?error.message:'The request could not be completed. Please try again.'});}
+export function method(req,...allowed){if(!allowed.includes(req.method))throw Object.assign(new Error('Method not allowed.'),{status:405});}
+export function body(req){if(typeof req.body==='string'){if(req.body.length>12000)throw Object.assign(new Error('Request too large.'),{status:413});return JSON.parse(req.body);}if(JSON.stringify(req.body||{}).length>12000)throw Object.assign(new Error('Request too large.'),{status:413});return req.body;}
+export async function user(req){const token=req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];if(!token)throw Object.assign(new Error('Sign in to use this feature.'),{status:401});const{data,error}=await database().auth.getUser(token);if(error||!data.user)throw Object.assign(new Error('Your session has expired. Sign in again.'),{status:401});return data.user;}
+export function cronAuth(req){const secret=process.env.CRON_SECRET;if(!secret||secret.length<32)throw Object.assign(new Error('Scheduler is not configured.'),{status:503});const expected=Buffer.from(`Bearer ${secret}`),actual=Buffer.from(req.headers.authorization||'');if(expected.length!==actual.length||!timingSafeEqual(expected,actual))throw Object.assign(new Error('Unauthorized.'),{status:401});}
+export async function rateLimit(userId,bucket,limit=10){const{data,error}=await database().rpc('consume_rate_limit',{p_user_id:userId,p_bucket:bucket,p_limit:limit});if(error)throw error;if(!data)throw Object.assign(new Error('Too many requests. Try again in an hour.'),{status:429});}
+const meal=z.enum(MEALS);
+export const preferencesSchema=z.object({enabled:z.boolean(),timezone:z.string().max(80).refine(v=>{try{new Intl.DateTimeFormat('en-US',{timeZone:v});return true}catch{return false}}),times:z.object(Object.fromEntries(MEALS.map(m=>[m,z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/)]))),meals:z.array(meal).max(3),brands:z.array(z.enum(BRANDS)).max(4),maxPrice:z.number().min(2).max(40),radius:z.number().min(2).max(30),nearbyOnly:z.boolean(),latitude:z.number().min(-90).max(90).nullable(),longitude:z.number().min(-180).max(180).nullable()});
+export const subscriptionSchema=z.object({endpoint:z.string().max(2048).refine(safePushEndpoint),keys:z.object({p256dh:z.string().regex(/^[A-Za-z0-9_-]{80,100}={0,2}$/),auth:z.string().regex(/^[A-Za-z0-9_-]{20,30}={0,2}$/)})});
+export const locationSchema=z.object({latitude:z.number().min(-90).max(90),longitude:z.number().min(-180).max(180),radius:z.number().min(2).max(30)});

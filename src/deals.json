@@ -1,0 +1,129 @@
+[
+  {
+    "id": "chilis-3-for-me",
+    "brand": "Chili’s",
+    "title": "3 courses. One happy wallet.",
+    "description": "A drink, starter, and entrée in one meal.",
+    "price": 10.99,
+    "price_label": "From $10.99",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "category": "Casual dining",
+    "image": "/food/chilis-3-for-me.jpg",
+    "color": "#bd302b",
+    "source_url": "https://www.chilis.com/3-for-me",
+    "checked_at": "2026-09-21T01:00:00Z",
+    "expires_at": null,
+    "status": "verified",
+    "terms": "3 for Me starts at $10.99. Price depends on location and entrée. Premium selections cost more. Confirm your restaurant’s menu before ordering.",
+    "app_required": false,
+    "featured": true
+  },
+  {
+    "id": "mcd-meal",
+    "brand": "McDonald’s",
+    "title": "Your go-to meal deal",
+    "description": "Sandwich, nuggets, fries, and a drink.",
+    "price": 5,
+    "price_label": "From $5",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "category": "Fast food",
+    "image": "/food/mcd-meal.jpg",
+    "color": "#ffbc0d",
+    "source_url": "https://www.mcdonalds.com/us/en-us/deals.html",
+    "checked_at": "2026-09-21T01:00:00Z",
+    "expires_at": null,
+    "status": "verified",
+    "terms": "Choose McDouble or McChicken. Prices and participation vary. Delivery excluded.",
+    "app_required": false
+  },
+  {
+    "id": "applebees-two",
+    "brand": "Applebee’s",
+    "title": "Dinner is better together",
+    "description": "Two entrées and an appetizer to share.",
+    "price": null,
+    "price_label": "Local price",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "category": "Casual dining",
+    "image": "https://www.applebees.com/-/media/applebees2/images/campaigns/specials-page/2-for-x-special-desktop.jpg?rev=89155dfc03c14d4194d6f5e4a8070722",
+    "color": "#b72025",
+    "source_url": "https://www.applebees.com/en/specials",
+    "checked_at": "2026-09-21T01:00:00Z",
+    "expires_at": null,
+    "status": "verified",
+    "terms": "Meal for two. Check the selected restaurant for available entrées, exact price, and participation.",
+    "app_required": false
+  },
+  {
+    "id": "mcd-breakfast",
+    "brand": "McDonald’s",
+    "title": "A better start for $2",
+    "description": "An eligible breakfast sandwich in the app.",
+    "price": 2,
+    "price_label": "$2",
+    "meals": [
+      "breakfast"
+    ],
+    "category": "Fast food",
+    "image": "",
+    "color": "#ffbc0d",
+    "source_url": "https://www.mcdonalds.com/us/en-us/deals.html",
+    "checked_at": "2026-09-21T01:00:00Z",
+    "expires_at": "2026-10-04T23:59:59-10:00",
+    "status": "verified",
+    "terms": "Once weekly through October 4, 2026. Rewards enrollment required. Participating locations, breakfast hours only; tax and delivery excluded.",
+    "app_required": true
+  },
+  {
+    "id": "mcd-fries",
+    "brand": "McDonald’s",
+    "title": "Fries on the side. On them.",
+    "description": "Medium fries with a qualifying purchase.",
+    "price": 1,
+    "price_label": "$1 min. spend",
+    "meals": [
+      "lunch",
+      "dinner"
+    ],
+    "category": "Fast food",
+    "image": "",
+    "color": "#ffbc0d",
+    "source_url": "https://www.mcdonalds.com/us/en-us/deals.html",
+    "checked_at": "2026-09-21T01:00:00Z",
+    "expires_at": "2026-10-04T23:59:59-10:00",
+    "status": "verified",
+    "terms": "Once weekly through October 4, 2026. $1 minimum before tax. Rewards required; participating restaurants, no delivery.",
+    "app_required": true
+  },
+  {
+    "id": "panera-rewards",
+    "brand": "Panera Bread",
+    "title": "Your next café favorite",
+    "description": "Explore offers in your MyPanera account.",
+    "price": null,
+    "price_label": "Check offers",
+    "meals": [
+      "breakfast",
+      "lunch",
+      "dinner"
+    ],
+    "category": "Fast casual",
+    "image": "",
+    "color": "#426b3e",
+    "source_url": "https://www.panerabread.com/en-us/menu/categories/value-duets.html",
+    "checked_at": null,
+    "expires_at": null,
+    "status": "check",
+    "terms": "No public deal price was verified. Choose your café and sign in to see any offers available to you. This listing is not a confirmed discount.",
+    "app_required": true
+  }
+]
