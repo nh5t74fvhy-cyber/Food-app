@@ -1,5 +1,5 @@
 export const MEALS = ['breakfast','lunch','dinner'];
-export const BRANDS = ['McDonald’s','Panera Bread','Chili’s','Applebee’s'];
+export const BRANDS = ["Chili’s", "McDonald’s", "Applebee’s", "Panera Bread", "Wendy’s", "Taco Bell", "Domino’s", "Buffalo Wild Wings", "IHOP", "Subway", "Denny’s"];
 export function distanceMiles(a,b){const rad=x=>x*Math.PI/180;const h=Math.sin(rad(b.latitude-a.latitude)/2)**2+Math.cos(rad(a.latitude))*Math.cos(rad(b.latitude))*Math.sin(rad(b.longitude-a.longitude)/2)**2;return 3958.7613*2*Math.atan2(Math.sqrt(h),Math.sqrt(Math.max(0,1-h)));}
 export function localClock(now,timezone){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return {day:`${p.year}-${p.month}-${p.day}`,minute:Number(p.hour)*60+Number(p.minute)};}
 export function dueMeals(prefs,now=new Date()){if(!prefs.enabled)return[];const clock=localClock(now,prefs.timezone);return prefs.meals.filter(m=>{const[h,n]=prefs.times[m].split(':').map(Number);const diff=clock.minute-(h*60+n);return diff>=0&&diff<5}).map(meal=>({meal,day:clock.day}));}

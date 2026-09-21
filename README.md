@@ -106,3 +106,13 @@ The script re-fetches the source and refuses a changed hash. Baseline approval d
 ## Privacy and operations
 
 No ad tracking or analytics SDK is included. Server logs omit tokens, coordinates, subscription keys, and email addresses. Account data is isolated by ownership policies. Delivery history is retained for 30 days and rate limits for two days by the cleanup job. Signing out unregisters this device's push subscription. The project needs an owner-approved privacy notice and support contact before inviting the public. Restaurant names and promotional photography belong to their owners; this independent app does not imply affiliation.
+
+## September 21 connection update
+
+Vercel production now uses `VITE_MEALRADAR_SUPABASE_URL` and `VITE_MEALRADAR_SUPABASE_PUBLISHABLE_KEY`, stored as public Config values. Legacy `VITE_SUPABASE_*` names remain supported for other deployments. Never expose service-role credentials in either prefix.
+
+Email/password login is connected. Separate MealRadar user accounts are required; signing into the Supabase dashboard, GitHub or ChatGPT does not create an app account. Social providers are currently disabled in the project. Email confirmation is required; public signup delivery, custom SMTP and the production confirmation redirect still require configuration/verification. Do not disable email verification to bypass email setup.
+
+Live isolation tests used two disposable confirmed test users through a JWT- and random-token-protected Supabase Edge Function. Twelve checks passed: two password sign-ins, preference save/read, cross-user read/write denial, private-table denial, catalog read, deal save/isolation, session refresh and signout. Both accounts were deleted and the function redeployed as an inert HTTP 410 handler. This tests backend authentication and RLS, not delivery of signup emails or a real browser notification.
+
+See MONETIZATION.md for monetization options, staged sponsorship/affiliate placements, and the remaining publisher and payment setup. No live ads or payouts are active.

@@ -39,3 +39,17 @@ Video resources were searched and the official Supabase YouTube channel was open
 - McDonald’s meal: https://s7d1.scene7.com/is/image/mcdonalds/ROD_Meal_Deal:3-column-desktop?resmode=sharp2
 
 These two assets are bundled to avoid broken remote loads; they were retrieved from the official source pages.
+
+## Expanded catalog — September 21, 2026
+
+Added ten listings from seven additional restaurant brands. Exact location participation is not verified. Unknown end dates remain null and all verified research expires after seven days unless rechecked.
+
+- Wendy’s: https://www.wendys.com/offers-coupons — $1.99 nuggets require another purchase (total spend unknown, excluded from budget alerts); $3 discount requires $20 qualifying spend. No weekday-only offers added because weekday scheduling is not yet implemented.
+- Taco Bell: https://www.tacobell.com/food/luxe-value-menu — value menu; listed prices $1.39–$2.99, subject to local pricing.
+- Domino’s: https://www.dominos.com/deals — $7.99 carryout; $6.99 each Mix & Match requires two items, so the price-filter minimum is $13.98. Local surcharges apply.
+- Buffalo Wild Wings: https://www.buffalowildwings.com/promos/ — advertised $21.99 bundle, limited time and participating locations.
+- IHOP: https://www.ihop.com/en/specials — $6 Value Menu with location, tax and promotion exclusions.
+- Subway: https://www.subway.com/en-us/menunutrition/menu — $4.99 Sub of the Day and $6.99 Meal of the Day; locally confirm items and eligibility.
+- Denny’s: https://dennys.com/rewards — personalized member offer discovery only, status `check`, no advertised price, excluded from alerts.
+
+Burger King, Pizza Hut, Sonic and Popeyes pages yielded no usable promotion terms. Arby’s visible deal was for August, so it was not added as a current September offer.
